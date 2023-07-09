@@ -1,0 +1,4 @@
+telebot
+requests
+numpy
+opencv-python-headless
