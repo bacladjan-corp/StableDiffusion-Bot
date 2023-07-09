@@ -78,7 +78,7 @@ def stablediffusion(message):
                 queue.append(use)
                 bot.reply_to(message, 'Wait... \n{your position in the queue: {}'.format(len(queue))
                 try:
-                    image_bytes = query4({'inputs': check,})
+                    image_bytes = diffusion({'inputs': check,})
                     img_bytes = cv2.imdecode(np.frombuffer(image_bytes, np.uint8), cv2.IMREAD_COLOR)
                     success, png_image = cv2.imencode('.png', img_bytes)
                     photo = io.BytesIO(png_image)
@@ -103,3 +103,65 @@ def stablediffusion(message):
     else:
         bot.reply_to(message, 'You do not have access.')
 ################################################################
+@bot.message_handler(commands=['queue'])
+def queue_command(message):
+    global queue
+    if message.from_user.id in admin_users:
+        If len(queue) > 0:
+            queue_list = "Users in queue:\n"
+            queue_list_min = "Users in queue:\n"
+            total_length = 0
+            is_exceeding_length = False
+            If len(stabllediffusion_queue) > 0:
+                stabllediffusion_queue_len = len(queue)
+                stabllediffusion_queue_users = ", ".join([f"@{user}" for user in queue])
+                total_length += len(f "The queue for Stable Diffusion ({stabllediffusion_queue_len} {stabllediffusion_queue_users}\n")
+                if total_length > 4000:
+                    is_exceeding_length = True
+                    queue_list_min += f "Queue for Stable Diffusion ({stabllediffusion_queue_len})\n"
+                else:
+                    queue_list_min += f "Queue for Stable Diffusion ({stabllediffusion_queue_len})\n"
+                    queue_list += f "Queue for Stable Diffusion ({stabllediffusion_queue_len} {stabllediffusion_queue_users}\n"
+            If is_exceeding_length:
+                bot.reply_to(message, queue_list_min)
+            else:
+                bot.reply_to(message, queue_list)
+        else:
+            bot.reply_to(message, "All queues are empty.")
+    else:
+        bot.reply_to(message, "You are not an administrator.")
+###############################################################
+@bot.message_handler(commands=['add_id'])
+def add_id(message):
+    global message_text
+    if (message.from_user.id in admin_users):
+        message_text = message.text
+        message_text = message_text.replace("/add_id", "")
+        allowed_user.append(message_text)
+        bot.reply_to(message, 'User ID successfully added')
+    else:
+        bot.reply_to(message, 'You are not an administrator.')
+###############################################################
+@bot.message_handler(commands=['ban'])
+def ban(message):
+    global message_text
+    if (message.from_user.id in admin_users):
+        message_text = message.text
+        message_text = message_text.replace("/ban", "")
+        allowed_user.remove(message_text)
+        bot.reply_to(message, 'The user is banned, you can use the command /unban [ID]')
+    else:
+        bot.reply_to(message, 'You are not an administrator.')
+###############################################################
+@bot.message_handler(commands=['unban'])
+def unban(message):
+    global message_text
+    if (message.from_user.id in admin_users):
+        message_text = message.text
+        message_text = message_text.replace("/unban", "")
+        allowed_user.append(message_text)
+        bot.reply_to(message, 'User is unbanished')
+    else:
+        bot.reply_to(message, 'You are not an administrator.')
+###############################################################
+bot.polling()
